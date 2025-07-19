@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="nbh" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>{{title}}</title>
+    <!-- KaTeX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"
+        integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"
+        integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+        integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+        integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+        media="(prefers-color-scheme: dark)" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
+        media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" rel="stylesheet">
+
+    <!-- Python highlight -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"
+        integrity="sha512-/uCTceIDOniHf+VUKbCnP/x6GQSRrm4GwUtQYMgKa9yIZPGzlR04flSsD+2or7bPn44VY9inIHI4cwNCcZmJDw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Tufte CSS-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css"
+        integrity="sha512-F5lKjC1GKbwLFXdThwMWx8yF8TX/WVrdhWYN9PWb6eb5hIRLmO463nrpqLnEUHxy2EHIzfC4dq/mncHD6ndR+g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <article>
+
+        {% render("cell.html", cell) for cell in cells %}
+
+        <script>
+            hljs.highlightAll();
+
+            /**
+            * Utility function to calculate the current theme setting.
+            * Look for a local storage value.
+            * Fall back to system setting.
+            * Fall back to light mode.
+            */
+            function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark }) {
+                if (localStorageTheme !== null) {
+                    return localStorageTheme;
+                }
+
+                if (systemSettingDark.matches) {
+                    return "dark";
+                }
+
+                return "light";
+            }
+
+            /**
+            * Utility function to update the button text and aria-label.
+            */
+            function updateButton({ buttonEl, isDark }) {
+                const newCta = isDark ? "Change to light theme" : "Change to dark theme";
+                // use an aria-label if you are omitting text on the button
+                // and using a sun/moon icon, for example
+                buttonEl.setAttribute("aria-label", newCta);
+                buttonEl.innerText = newCta;
+            }
+
+            /**
+            * Utility function to update the theme setting on the html tag
+            */
+            function updateThemeOnHTMLElement({ theme }) {
+                document.querySelector("body").setAttribute("data-theme", theme);
+            }
+
+
+            /**
+            * On page load:
+            */
+
+            /**
+            * 1. Grab what we need from the DOM and system settings on page load
+            */
+            const button = document.querySelector("[data-theme-toggle]");
+            const localStorageTheme = localStorage.getItem("theme");
+            const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+            /**
+             * 2. Work out the current site settings
+             */
+            let currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark });
+
+
+            /**
+            * 3. Update the theme setting and button text according to current settings
+            */
+            updateButton({ buttonEl: button, isDark: currentThemeSetting === "dark" });
+            updateThemeOnHTMLElement({ theme: currentThemeSetting });
+
+            /**
+            * 4. Add an event listener to toggle the theme
+            */
+            button.addEventListener("click", (event) => {
+                const newTheme = currentThemeSetting === "dark" ? "light" : "dark";
+
+                localStorage.setItem("theme", newTheme);
+                updateButton({ buttonEl: button, isDark: newTheme === "dark" });
+                updateThemeOnHTMLElement({ theme: newTheme });
+
+                currentThemeSetting = newTheme;
+
+                console.log("Current theme setting:", currentThemeSetting);
+
+                const localStorageTheme = localStorage.getItem("theme");
+                const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+                console.log("Local storage theme:", localStorageTheme);
+                console.log("System setting dark mode:", systemSettingDark.matches);
+
+            });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                renderMathInElement(document.body, {
+                    // customised options
+                    // • auto-render specific keys, e.g.:
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    // • rendering keys, e.g.:
+                    throwOnError: false
+                });
+            });
+        </script>
+
+        <button type="button" data-theme-toggle aria-label="Change to light theme">
+            Change to light theme (or icon here)
+        </button>
+</body>
