@@ -1,9 +1,9 @@
 [project]
 name = "nbh"
-version = "0.1.5"
+version = "0.1.2"
 description = "A simple notebook HTML renderer"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dependencies = []
 authors = [{name = "Fabrizio (Mistobaan) Milo", email = "misto~remove~this~baan@email.com"}]
 classifiers = [
@@ -12,6 +12,7 @@ classifiers = [
   "Intended Audience :: Developers",
   "Intended Audience :: Education",
   "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
