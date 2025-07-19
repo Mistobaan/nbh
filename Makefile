@@ -15,3 +15,5 @@ publish_to_test_pypi: build
 
 bump_version_patch:
 	uv version --bump patch
+	git add .
+	git commit -m "Bump version to $(shell uv version --get)"
