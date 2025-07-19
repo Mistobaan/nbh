@@ -33,19 +33,18 @@ def app():
         parsed_cells = lib.parse_ipynb(file)
         formatted_cells = []
         for cell in parsed_cells:
-            match cell["type"]:
-                case "code":
-                    # don't output code unless has an explicitly @nbh:show
-                    should_show, clean_content = lib.clean_and_format_nbh(cell["source"])
-                    if should_show and clean_content:
-                        ctx = {"content": clean_content}
-                        cell_html = lib.render_template("cell.code.html", ctx)
-                        formatted_cells.append(cell_html)
-                case "markdown":
-                    ctx = {"content": lib.md_to_html(cell["source"])}
-
-                    cell_html = lib.render_template("cell.markdown.html", ctx)
+            if cell["type"] == "code":
+                # don't output code unless has an explicitly @nbh:show
+                should_show, clean_content = lib.clean_and_format_nbh(cell["source"])
+                if should_show and clean_content:
+                    ctx = {"content": clean_content}
+                    cell_html = lib.render_template("cell.code.html", ctx)
                     formatted_cells.append(cell_html)
+            elif cell["type"] == "markdown":
+                ctx = {"content": lib.md_to_html(cell["source"])}
+
+                cell_html = lib.render_template("cell.markdown.html", ctx)
+                formatted_cells.append(cell_html)
 
         ctx = {"title": "Notebook HTML Renderer", "cells": formatted_cells}
         html_output = lib.render_template("index.html", ctx)

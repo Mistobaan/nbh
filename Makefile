@@ -10,7 +10,7 @@ test:
 render:
 	uv run nbh ./tests/fixtures/simple.ipynb --output /tmp/
 
-publish_to_test_pypi:
+publish_to_test_pypi: build
 	uvx twine upload --repository testpypi dist/*
 
 bump_version_patch:
