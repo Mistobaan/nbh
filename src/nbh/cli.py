@@ -18,7 +18,7 @@ def app():
     parser.add_argument(
         "--output",
         metavar="DIR",
-        default=".",
+        default="",
         help="Output directory for processed files (default: current directory).",
     )
 
@@ -41,7 +41,7 @@ def app():
                     cell_html = lib.render_template("cell.code.html", ctx)
                     formatted_cells.append(cell_html)
             elif cell["type"] == "markdown":
-                ctx = {"content": lib.md_to_html(cell["source"])}
+                ctx = {"content": lib.parse_markdown_cell(cell["source"])}
 
                 cell_html = lib.render_template("cell.markdown.html", ctx)
                 formatted_cells.append(cell_html)
@@ -50,10 +50,14 @@ def app():
         html_output = lib.render_template("index.html", ctx)
 
         Path(args.output).mkdir(parents=True, exist_ok=True)
-        output_file_path = Path(args.output) / f"{Path(file).stem}.html"
+        if not args.output:
+            output_file_path = Path(file).parent / f"{Path(file).stem}.html"
+        else:
+            output_file_path = Path(args.output) / f"{Path(file).stem}.html"
+
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(html_output)
-            # print(f"Output written to: {output_file_path}")
+            print(f"nbh: wrote {output_file_path}")
 
 
 if __name__ == "__main__":

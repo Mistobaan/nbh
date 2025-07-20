@@ -12,6 +12,8 @@ Tufte CSS is used for styling, providing a clean and elegant look, Github Flavor
 
 ![Sample Output](https://raw.githubusercontent.com/Mistobaan/nbh/c6f2446601aa00b54cddc778607d8bea02937e1d/assets/sample.png)
 
+See [intro_to_latex.ipynb](https://github.com/Mistobaan/nbh/blob/main/assets/intro_to_latex.ipynb) and the generated [intro_to_latex.html](https://rawcdn.githack.com/Mistobaan/nbh/refs/heads/main/assets/intro_to_latex.html) for a more complex example.
+
 ## Usage
 
 The recommended way is to use [`uvx`](https://docs.astral.sh/uv/):

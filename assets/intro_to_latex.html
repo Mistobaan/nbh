@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="nbh" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>Notebook HTML Renderer</title>
+    <!-- KaTeX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"
+        integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"
+        integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+        integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+        integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+        media="(prefers-color-scheme: dark)" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css"
+        media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" rel="stylesheet">
+
+    <!-- Python highlight -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/python.min.js"
+        integrity="sha512-/uCTceIDOniHf+VUKbCnP/x6GQSRrm4GwUtQYMgKa9yIZPGzlR04flSsD+2or7bPn44VY9inIHI4cwNCcZmJDw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Tufte CSS-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.8.0/tufte.min.css"
+        integrity="sha512-F5lKjC1GKbwLFXdThwMWx8yF8TX/WVrdhWYN9PWb6eb5hIRLmO463nrpqLnEUHxy2EHIzfC4dq/mncHD6ndR+g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <article>
+
+        <section>
+    <p><h1>Introduction to LaTeX<span class="heading-link-symbol" aria-hidden="false"/></h1><p>In this tutorial, you will learn some of the basics on how to use <span>$\LaTeX$</span> to display equations in Jupyter notebooks. For looking up symbols you may need, you can use any of the many <a href="http://users.dickinson.edu/~richesod/latex/latexcheatsheet.pdf">cheat sheets</a> you can find by asking Google. I have provided a few that will come up often in this course at the <a href="#Useful-LaTeX-symbols-for-BE/Bi-103">end of this lesson</a>.</p><p>In this lesson, whenever a LaTeX expression is shown, the raw Markdown/LaTeX is shown beneath it. (The word LaTeX is generally stylized as <span>$\LaTeX$</span>, but I get tired of reading that, so going forward, I will just write "LaTeX.")</p></p>
+</section>
+<section>
+    <p><h2>Basic inline LaTeX<span class="heading-link-symbol" aria-hidden="false"/></h2><p>To embed LaTeX within text, simply encapsulate the LaTeX portions in dollar signs (<code>$</code>). MathJax takes care of the rest. As an example, consider the sentence below and the markdown/LaTeX code to render it.</p><p>Einstein told us that <span>$E = mc^2$</span>.</p><pre><code>
+Einstein told us that $E = mc^2$.
+</code></pre><p>Notice how the equation is properly rendered, with mathematical variables in italics. Note also how <code>^2</code> was used to raise to a power. If the power has more than one character in it, it should be enclosed in braces (<code>{}</code>).  In fact, braces are used to generally group symbols in LaTeX.</p><p>Euler told us that <span>$\mathrm{e}^{i \pi} - 1 = 0$</span>.</p><pre><code>
+Euler told us that $\mathrm{e}^{i \pi} - 1 = 0$.
+</code></pre><p>Aside from the grouping braces, there are several other syntactical items of note. First, notice that I made the special character <span>$\pi$</span> with <code>\pi</code>. In general, a backward slash precedes special symbols or commands in LaTeX. If we want another Greek letter, like <span>$\theta$</span>, we use <code>\theta</code>. Now, also note that I used "<code>\mathrm{e}</code>" for the base of the natural logarithm.  I was signaling to LaTeX that I wanted the character written in Roman font, and not italics, so I used <code>\mathrm</code>. Anything in the braces following the function <code>\mathrm</code> is rendered in Roman font. Note the difference.</p><p>This is <span>$e$</span>. This is <span>$\mathrm{e}$</span></p><pre><code>
+This is $e$. This is $\mathrm{e}$.
+</code></pre><p>Now, back to grouping things in braces. We can do similar groupings using braces with with subscripts.</p><p>The dot product of two <span>$n$</span>-vectors is <span>$\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i b_i$</span>.</p><pre><code>
+The dot product of two $n$-vectors is $\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i b_i$.
+</code></pre><p>Here, I have used `<span>$\mathbf{a}$</span><code> to make the character </code>a` boldface, denoting a vector. Note that we denote subscripts with an underscore. Notice also that the bounds of the sum use the same underscore and caret notation as for subscripts and superscripts.</p></p>
+</section>
+<section>
+    <p><h2>Displaying equations on separate lines<span class="heading-link-symbol" aria-hidden="false"/></h2><p>The bounds on the summation in the above example may look a little funny to you because they are not above and below the summation symbol.  This is because this particular equation is written inline.  If we had separated it from the text, it renders differently.</p><p>We can make an equation appear centered on a new line, like</p><p>$$\begin{align*}
+\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i b_i.
+\end{align*}$$</p><pre><code>
+We can make an equation appear centered on a new line, like
+</code></pre><pre><code>
+\begin{align}
+\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i b_i.
+\end{align}
+</code></pre><p>The <code>align</code> environment in LaTeX specifies that you want centered equations, separated from the text. It is called <code>align</code> because it allows you to align the equations. You separate lines in the equations with a double backslash (<code>//</code>).  Insert an ampersand (<code>&</code>) in each line at the alignment point. All equations will be aligned at the location of the ampersand symbols (and, of course, the ampersands will not appear in the rendered equations).</p><p>For a three-vector consisting of <span>$x$</span>, <span>$y$</span>, and <span>$z$</span> components,</p><p>$$\begin{align*}
+\mathbf{a} \cdot \mathbf{b} &= \sum_{i=1}^n a_i b_i \\
+&= a_x b_x + a_y b_y + a_z b_z.
+\end{align*}$$</p><pre><code>
+For a three-vector consisting of $x$, $y$, and $z$ components,
+
+\begin{align}
+\mathbf{a} \cdot \mathbf{b} &= \sum_{i=1}^n a_i b_i \\
+&= a_x b_x + a_y b_y + a_z b_z.
+\end{align}
+</code></pre><p>Note that I always put an extra blank line before the <code>\begin{align}</code> statement. This is not necessary, but I think things look better with the extra space.</p></p>
+</section>
+<section>
+    <p><h2>Fractions (and an example of fine-tuning)<span class="heading-link-symbol" aria-hidden="false"/></h2><p>To display fractional quantities, we use the <code>\frac{}{}</code> command. <code>\frac</code> is always followed by two sets of braces; the numerator is contained in the first, and the denominator is contained in the second. As an example, we can write an equation you will become intimately familiar with if you take the second term of this course,</p><p>$$\begin{align*}
+P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)}
+\end{align*}$$</p><pre><code>
+\begin{align}
+P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)}
+\end{align}
+</code></pre><p>The right hand side has a nicely-formatted fraction. I did a little extra fine-tuning in this equation.  I'll show the equation again without the fine-tuning, which used the <code>\mid</code> and <code>\,</code> commands.</p><p>$$\begin{align*}
+P(A | B) = \frac{P(B | A) P(A)}{P(B)}.
+\end{align*}$$</p><pre><code>
+\begin{align}
+P(A | B) = \frac{P(B | A) P(A)}{P(B)}.
+\end{align}
+</code></pre><p>First, the <code>\mid</code> command should be used in conditional probabilities. Just using a vertical bar (<code>|</code>) results in crowding. Similarly, I used the <code>\,</code> command to insert a little extra space between the two probabilities in the numerator. This makes the equation a bit easier to read. This <code>\,</code> operator is especially important when defining integrals. We can put a little space between the <span>$\mathrm{d}x$</span> and the integrand.</p><p>$$\begin{align*}
+\text{good: } &\int_0^{2\pi} \mathrm{d}x \, \sin x. \\[1em]
+\text{bad: } &\int_0^{2\pi} \mathrm{d}x \sin x.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\text{good: } &\int_0^{2\pi} \mathrm{d}x \, \sin x. \\[1em]
+\text{bad: } &\int_0^{2\pi} \mathrm{d}x \sin x.
+\end{align}
+</code></pre><p>Note that I inserted extra space after the new line. Specifically, <code>\\[1em]</code> instructs LaTeX to insert a space equation to the width of an M character between the equations. I often do this to keep things clear.</p><p>It is also very important to note that I used <span>$\sin$</span> and not <span>$sin$</span>. Mathematical functions should be in Roman font and are invoked with a backslash. Otherwise, the characters are interpreted as separate variables. To be clear:</p><p>$$\begin{align*}
+\text{good: } &\sin x. \\[1em]
+\text{bad: } & sin x.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\text{good: } &\sin x. \\[1em]
+\text{bad: } & sin x.
+\end{align}
+</code></pre><p>Finally, notice that I was able to put text in the equation like this: <code>\text{good: }</code>.</p></p>
+</section>
+<section>
+    <p><h2>Grouping operators (and more fine-tuning)<span class="heading-link-symbol" aria-hidden="false"/></h2><p>Compare the following equations.</p><p>$$\begin{align*}
+\text{good: } &\sum_{i=1}^n i^3 = \left(\sum_{i=1}^n i\right)^2. \\[1em]
+\text{bad: }  &\sum_{i=1}^n i^3 = (\sum_{i=1}^n i)^2.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\text{good: } &\sum_{i=1}^n i^3 = \left(\sum_{i=1}^n i\right)^2. \\[1em]
+\text{bad: }  &\sum_{i=1}^n i^3 = (\sum_{i=1}^n i)^2.
+\end{align}
+</code></pre><p>In the second equation, I did not use the <code>\left(</code> and <code>\right)</code> construction for parentheses and the result looks pretty awful. In LaTeX, the height of anything that is encapsulated by <code>\left(</code> and <code>\right)</code> scales the parentheses appropriately. You can use <code>\left</code> and <code>\right</code> with many symbols. An important example is <code>\left\{</code>. Note that to display braces in an equation, you have to use <code>\{</code> because just a plain brace (<code>{</code>) has a different meaning.</p><p>(By the way, that equation is true, and pretty amazing. It says that the sum of the first <span>$n$</span> <em>cubes</em> of integers is equal to the sum of the first <span>$n$</span> integers <em>squared</em>!)</p><p>Finally, if you use <code>\left.</code> or <code>\right.</code>, LaTeX will simply scale the opposite symbol to match the height of the text, but will suppress printing the other. For example,</p><p>$$\begin{align*}
+\left. \frac{1}{x + 2} \right|_0^2 = -\frac{1}{4}.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\left. \frac{1}{x + 2} \right|_0^2 = -\frac{1}{4}.
+\end{align}
+</code></pre><p>This is also useful if you are going to use <code>/</code> for a division operation. Compare the following.</p><p>$$\begin{align*}
+\text{good: } & \left. x^2 \middle/ y^2 \right. \\[1em]
+\text{bad: } & x^2 / y^2
+\end{align*}$$</p><pre><code>
+\begin{align}
+\text{good: } & \left. x^2 \middle/ y^2 \right. \\[1em]
+\text{bad: } & x^2 / y^2
+\end{align}
+</code></pre><p>Here, we used the <code>\middle</code> operator to scale the length of the division sign.</p></p>
+</section>
+<section>
+    <p><h2>Matrices and arrays<span class="heading-link-symbol" aria-hidden="false"/></h2>
+<p>On occasion, you'll need to express matrices. This is most easily done using the <code>pmatrix</code> environment.  For example, a covariance matrix for two variables might be written as</p><p>$$\begin{align*}
+\sigma^2 = \begin{pmatrix}
+\sigma_1^2 & \sigma_{12} \\
+\sigma_{12} & \sigma_2^2
+\end{pmatrix}.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\sigma^2 = \begin{pmatrix}
+\sigma_1^2 & \sigma_{12} \\
+\sigma_{12} & \sigma_2^2
+\end{pmatrix}.
+\end{align}
+</code></pre><p>Once in the <code>pmatrix</code> environment, each row has entries separated by an ampersand. The row ends with a <code>\\</code>.  Each row must have the same number of entries.</p><p>You may also need to represent an values stacked on top of each other. For example, we might specify a piecewise linear function like this.</p><p>$$\begin{align*}
+\text{rectifier}(x) = \left\{
+\begin{array}{cl}
+0 & x \le 0 \\
+x & x > 0.
+\end{array}
+\right.
+\end{align*}$$</p><pre><code>
+\begin{align}
+\text{rectifier}(x) = \left\{
+\begin{array}{cl}
+0 & x \le 0 \\
+x & x > 0.
+\end{array}
+\right.
+\end{align}
+</code></pre><p>The <code>array</code> environment allows arrays of text. The <code>{cl}</code> after <code>\begin{array}</code> indicates that two columns are wanted, with the first column being centered and the second being left-aligned. If we chose instead <code>{lr}</code>, the first column is left-aligned and the second column is right-aligned.</p></p>
+</section>
+<section>
+    <p><h2>Useful LaTeX symbols for BE/Bi 103<span class="heading-link-symbol" aria-hidden="false"/></h2>
+<p>Following is a list of some symbols you may find useful in this class.</p><table>
+<thead><tr>
+<th>LaTeX</th>
+<th style="text-align:center;">symbol</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>\approx</code></td>
+<td style="text-align:center;"><span>$\approx$</span></td>
+</tr>
+<tr>
+<td><code>\sim</code></td>
+<td style="text-align:center;"><span>$\sim$</span></td>
+</tr>
+<tr>
+<td><code>\propto</code></td>
+<td style="text-align:center;"><span>$\propto$</span></td>
+</tr>
+<tr>
+<td><code>\le</code></td>
+<td style="text-align:center;"><span>$\le$</span></td>
+</tr>
+<tr>
+<td><code>ge</code></td>
+<td style="text-align:center;"><span>$\ge$</span></td>
+</tr>
+<tr>
+<td><code>\pm</code></td>
+<td style="text-align:center;"><span>$\pm$</span></td>
+</tr>
+<tr>
+<td><code>\in</code></td>
+<td style="text-align:center;"><span>$\in$</span></td>
+</tr>
+<tr>
+<td><code>\ln</code></td>
+<td style="text-align:center;"><span>$\ln$</span></td>
+</tr>
+<tr>
+<td><code>\exp</code></td>
+<td style="text-align:center;"><span>$\exp$</span></td>
+</tr>
+<tr>
+<td><code>\prod_{i\in D}</code></td>
+<td style="text-align:center;"><span>${\displaystyle \prod_{i\in D}}$</span></td>
+</tr>
+<tr>
+<td><code>\sum_{i\in D}</code></td>
+<td style="text-align:center;"><span>${\displaystyle \sum_{i\in D}}$</span></td>
+</tr>
+<tr>
+<td><code>\frac{\partial f}{\partial x}</code></td>
+<td style="text-align:center;"><span>${\displaystyle \frac{\partial f}{\partial x}}$</span></td>
+</tr>
+<tr>
+<td><code>\sqrt{x}</code></td>
+<td style="text-align:center;"><span>$\sqrt{x}$</span></td>
+</tr>
+<tr>
+<td><code>\bar{x}</code></td>
+<td style="text-align:center;"><span>$\bar{x}$</span></td>
+</tr>
+<tr>
+<td><code>\langle x \rangle</code></td>
+<td style="text-align:center;"><span>$\langle x \rangle$</span></td>
+</tr>
+<tr>
+<td><code>\left\langle \frac{x}{y} \right\rangle</code></td>
+<td style="text-align:center;"><span>$\left\langle \frac{x}{y} \right\rangle$</span></td>
+</tr>
+</tbody>
+</table></p>
+</section>
+
+
+        <script>
+            hljs.highlightAll();
+
+            /**
+            * Utility function to calculate the current theme setting.
+            * Look for a local storage value.
+            * Fall back to system setting.
+            * Fall back to light mode.
+            */
+            function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark }) {
+                if (localStorageTheme !== null) {
+                    return localStorageTheme;
+                }
+
+                if (systemSettingDark.matches) {
+                    return "dark";
+                }
+
+                return "light";
+            }
+
+            /**
+            * Utility function to update the button text and aria-label.
+            */
+            function updateButton({ buttonEl, isDark }) {
+                const newCta = isDark ? "Change to light theme" : "Change to dark theme";
+                // use an aria-label if you are omitting text on the button
+                // and using a sun/moon icon, for example
+                buttonEl.setAttribute("aria-label", newCta);
+                buttonEl.innerText = newCta;
+            }
+
+            /**
+            * Utility function to update the theme setting on the html tag
+            */
+            function updateThemeOnHTMLElement({ theme }) {
+                document.querySelector("body").setAttribute("data-theme", theme);
+            }
+
+
+            /**
+            * On page load:
+            */
+
+            /**
+            * 1. Grab what we need from the DOM and system settings on page load
+            */
+            const button = document.querySelector("[data-theme-toggle]");
+            const localStorageTheme = localStorage.getItem("theme");
+            const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+            /**
+             * 2. Work out the current site settings
+             */
+            let currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark });
+
+
+            /**
+            * 3. Update the theme setting and button text according to current settings
+            */
+            updateButton({ buttonEl: button, isDark: currentThemeSetting === "dark" });
+            updateThemeOnHTMLElement({ theme: currentThemeSetting });
+
+            /**
+            * 4. Add an event listener to toggle the theme
+            */
+            button.addEventListener("click", (event) => {
+                const newTheme = currentThemeSetting === "dark" ? "light" : "dark";
+
+                localStorage.setItem("theme", newTheme);
+                updateButton({ buttonEl: button, isDark: newTheme === "dark" });
+                updateThemeOnHTMLElement({ theme: newTheme });
+
+                currentThemeSetting = newTheme;
+
+                console.log("Current theme setting:", currentThemeSetting);
+
+                const localStorageTheme = localStorage.getItem("theme");
+                const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+                console.log("Local storage theme:", localStorageTheme);
+                console.log("System setting dark mode:", systemSettingDark.matches);
+
+            });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                renderMathInElement(document.body, {
+                    // customised options
+                    // • auto-render specific keys, e.g.:
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    // • rendering keys, e.g.:
+                    throwOnError: false
+                });
+            });
+        </script>
+
+        <!-- <button type="button" data-theme-toggle aria-label="Change to light theme">
+            Change to light theme (or icon here)
+        </button> -->
+</body>

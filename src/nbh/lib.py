@@ -78,21 +78,6 @@ def parse_ipynb(file_path):
     return parsed_cells
 
 
-def format_notebook(parsed_cells):
-    """Utility to print the parsed cells in a readable format."""
-    for cell in parsed_cells:
-        print(f"Cell {cell['index']}: Type = {cell['type']}")
-        if cell["metadata"]:
-            print(f"Metadata: {cell['metadata']}")
-        print("Source:")
-        print(cell["source"])
-        if cell["outputs"]:
-            print("Outputs:")
-            for out in cell["outputs"]:
-                print(out.strip())
-        print("\n---\n")
-
-
 def normalize_html(html_str):
     # Decode HTML entities
     html_str = html.unescape(html_str)
@@ -142,7 +127,7 @@ def render_template(template_path: str, context: dict[str, Any]) -> str:
         sub_template_path_str, loop_var_name, iterable_name = match.groups()
 
         iterable = get_from_context(iterable_name, context)
-        if not isinstance(iterable, list | tuple):
+        if not isinstance(iterable, list) or isinstance(iterable, tuple):
             # Silently ignore if not iterable or not found
             return ""
 
@@ -186,12 +171,11 @@ def read_static_file(filename: str) -> str:
 
 
 def parse_inline(text):
-    # Inline LaTeX (e.g., $\sum^10_0$)
-    def inline_latex_repl(m):
-        latex = m.group(1)
-        return f"<span>${latex}$</span>"
-
-    text = re.sub(r"\$(.*?)\$", inline_latex_repl, text)
+    if re.search(r"\$.*?\$", text):
+        parts = re.split(r"(\$.*?\$)", text, flags=re.DOTALL)
+        return "".join(
+            f"<span>{p}</span>" if p.strip().startswith("$") else parse_inline(p) for p in parts
+        )
 
     # Images
     def image_repl(m):
@@ -221,6 +205,54 @@ def parse_inline(text):
     return re.sub(r"~~([^~]+)~~", r"<del>\1</del>", text)
 
 
+def convert_indented_to_pre(markdown_text):
+    # Split the input into lines
+    lines = markdown_text.splitlines()
+    output = []
+    i = 0
+    in_indented_block = False
+    indented_lines = []
+
+    while i < len(lines):
+        line = lines[i]
+        # Check if the line is indented (4+ spaces or a tab)
+        is_indented = bool(re.match(r"^\s{4,}|\t", line))
+
+        if is_indented and not in_indented_block:
+            # Start of a new indented block
+            in_indented_block = True
+            indented_lines = [line.lstrip()]  # Remove leading indentation
+        elif is_indented and in_indented_block:
+            # Continue collecting indented lines
+            indented_lines.append(line.lstrip())
+        elif not is_indented and in_indented_block:
+            # End of indented block, wrap in <pre>
+            output.append("<pre>")
+            output.extend(indented_lines)
+            output.append("</pre>")
+            in_indented_block = False
+            indented_lines = []
+            output.append(line)  # Add the non-indented line
+        else:
+            # Non-indented line, not in a block
+            output.append(line)
+
+        i += 1
+
+
+def parse_markdown_cell(md):
+    paragraphs = re.split("\n\n", md)
+    html = []
+    for p in paragraphs:
+        out = md_to_html(p)
+        html.append(out)
+        print(p)
+        print("-" * 80)
+        print(out)
+        print("=" * 80)
+    return "".join(html)
+
+
 def md_to_html(md):
     if re.search(r"\$\$.*?\$\$", md, re.DOTALL):
         parts = re.split(r"(\$\$(.*?)\$\$)", md, flags=re.DOTALL)
@@ -230,6 +262,19 @@ def md_to_html(md):
             if i + 2 < len(parts):
                 inner = parts[i + 2]
                 html.append(f"<p>$${inner}$$</p>")
+        return "".join(html)
+
+    if re.search(r"^\\begin\{align\}.*?\\end\{align\}", md, re.DOTALL):
+        parts = re.split(r"(^\\begin\{align\}.*?\\end\{align\})", md, flags=re.DOTALL)
+        html = []
+        for part in parts:
+            if part.startswith(r"\begin{align}"):
+                latex = part.replace(r"\begin{align}", r"\begin{align*}").replace(
+                    r"\end{align}", "\end{align*}"
+                )
+                html.append(f"<p>$${latex}$$</p>")
+            else:
+                html.append(md_to_html(part))
         return "".join(html)
 
     lines = md.splitlines()
@@ -279,6 +324,47 @@ def md_to_html(md):
             quote_html = md_to_html(quote_text)
             html.append(f"<blockquote>{quote_html}</blockquote>")
             continue
+        # Table
+        if "|" in line and i + 1 < len(lines) and "---" in lines[i + 1]:
+            print("parsing table")
+            # Headers
+            headers = [h.strip() for h in lines[i].strip().strip("|").split("|")]
+            i += 1
+            align_line = lines[i].strip().strip("|")
+            align_parts = [a.strip() for a in align_line.split("|")]
+            aligns = []
+            for a in align_parts:
+                if a.startswith(":") and a.endswith(":"):
+                    aligns.append("center")
+                elif a.startswith(":"):
+                    aligns.append("left")
+                elif a.endswith(":"):
+                    aligns.append("right")
+                else:
+                    aligns.append(None)
+            i += 1
+            html.append("<table>")
+            html.append("<thead><tr>")
+            for j, h in enumerate(headers):
+                al = aligns[j] if j < len(aligns) else None
+                style = f' style="text-align:{al};"' if al else ""
+                html.append(f"<th{style}>{parse_inline(h)}</th>")
+            html.append("</tr></thead>")
+            html.append("<tbody>")
+
+            while i < len(lines) and "|" in lines[i]:
+                row_line = lines[i].strip().strip("|")
+                cells = [c.strip() for c in row_line.split("|")]
+                html.append("<tr>")
+                for j, cell in enumerate(cells):
+                    al = aligns[j] if j < len(aligns) else None
+                    style = f' style="text-align:{al};"' if al else ""
+                    html.append(f"<td{style}>{parse_inline(cell)}</td>")
+                html.append("</tr>")
+                i += 1
+            html.append("</tbody>")
+            html.append("</table>")
+            continue
         # List
         curr_line = lines[i]
         line = curr_line.lstrip()
@@ -319,45 +405,24 @@ def md_to_html(md):
                 i += 1
             html.append(f"</{tag}>")
             continue
-        # Table
-        if "|" in line and i + 1 < len(lines) and "---" in lines[i + 1]:
-            # Headers
-            headers = [h.strip() for h in lines[i].strip().strip("|").split("|")]
-            i += 1
-            align_line = lines[i].strip().strip("|")
-            align_parts = [a.strip() for a in align_line.split("|")]
-            aligns = []
-            for a in align_parts:
-                if a.startswith(":") and a.endswith(":"):
-                    aligns.append("center")
-                elif a.startswith(":"):
-                    aligns.append("left")
-                elif a.endswith(":"):
-                    aligns.append("right")
-                else:
-                    aligns.append(None)
-            i += 1
-            html.append("<table>")
-            html.append("<thead><tr>")
-            for j, h in enumerate(headers):
-                al = aligns[j] if j < len(aligns) else None
-                style = f' style="text-align:{al};"' if al else ""
-                html.append(f"<th{style}>{parse_inline(h)}</th>")
-            html.append("</tr></thead>")
-            html.append("<tbody>")
-            while i < len(lines) and lines[i].strip().startswith("|"):
-                row_line = lines[i].strip().strip("|")
-                cells = [c.strip() for c in row_line.split("|")]
-                html.append("<tr>")
-                for j, cell in enumerate(cells):
-                    al = aligns[j] if j < len(aligns) else None
-                    style = f' style="text-align:{al};"' if al else ""
-                    html.append(f"<td{style}>{parse_inline(cell)}</td>")
-                html.append("</tr>")
+
+        # Indented Block
+        # Check if the line is indented (4+ spaces or a tab)
+        if bool(re.match(r"^\s{4,}|\t", lines[i])):
+            indented_lines = []
+            while i < len(lines) and bool(re.match(r"^\s{4,}|\t", lines[i])):
+                # Continue collecting indented lines
+                indented_lines.append(lines[i].lstrip())
                 i += 1
-            html.append("</tbody>")
-            html.append("</table>")
+            if html and html[-1].endswith("</pre>"):
+                # don't add another <pre> if the last element is already a pre block
+                html.append("<code>")
+            else:
+                html.append("<pre><code>")
+            html.extend(indented_lines)
+            html.append("</code></pre>")
             continue
+
         # Paragraph
         para = []
         while i < len(lines) and lines[i].strip():
@@ -365,6 +430,7 @@ def md_to_html(md):
             i += 1
         para_text = " ".join(para)
         html.append(f"<p>{parse_inline(para_text)}</p>")
+
     return "\n".join(html)
 
 
